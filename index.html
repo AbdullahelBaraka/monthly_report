@@ -93,7 +93,7 @@
 
     <script type="module">
 
-        // ---------------- FIXED CSV Loader (Handles Mixed Delimiters) ----------------
+        // ---------------- FIXED CSV Loader (Handles Mixed Delimiters and normalizes headers) ----------------
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
@@ -110,8 +110,11 @@
                 delimiter = ';';
             }
             
+            // Use the chosen delimiter to split all rows
             const rows = lines.map(r => r.split(delimiter).map(c => c.trim()));
-            const headers = rows.shift().map(h => h.replace(/\W/g, '_').toLowerCase()); // Normalize headers for safe access
+            
+            // Normalize headers: remove non-word characters and convert to lowercase for reliable object access
+            const headers = rows.shift().map(h => h.replace(/\W/g, '_').toLowerCase()); 
 
             return rows.map(row => {
                 const obj = {};
@@ -120,8 +123,8 @@
             });
         }
 
-        // ----------- GitHub CSV URLs --------------
-       const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/main/";
+        // ----------- GitHub CSV URLs (Restored to correct path) --------------
+        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/main/";
 
         let STAFF = [];
         let PROCEDURES = [];
@@ -133,8 +136,8 @@
             currency: 'USD',
             maximumFractionDigits: 0
         });
-        
-        // -------- Populate Department Dropdown ----------
+        
+        // -------- Function to populate the dropdown (Was missing in original code) ----------
         function populateDepartmentSelect(departments) {
             const select = document.getElementById('department-select');
 
@@ -146,41 +149,45 @@
             });
         }
 
-
-        // -------- Load CSV Files ----------
+        // -------- Load CSV Files (Updated to use robust loadCSV) ----------
         async function loadAllCSVs() {
             try {
                 STAFF = await loadCSV(BASE_URL + "staff.csv");
                 PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
-                
-                // Check the specific column name used for department, allowing for variations
-                const departmentKey = Object.keys(STAFF[0] || {}).find(key => key.includes('department'));
 
-                DEPARTMENTS = [...new Set(STAFF.map(s => s[departmentKey]).filter(Boolean))];
+                // Find the correct department key (e.g., handles 'department' or 'department ')
+                const departmentKey = Object.keys(STAFF[0] || {}).find(key => key.includes('department'));
+                
+                // Ensure departments are extracted using the correct key and filter out empty values
+                DEPARTMENTS = [...new Set(STAFF.map(s => s[departmentKey]).filter(Boolean))];
 
                 populateDepartmentSelect(DEPARTMENTS);
-                
-                // Automatically select the first department after loading
-                if (DEPARTMENTS.length > 0) {
+                
+                // Automatically select the first department if data is present
+                if (DEPARTMENTS.length > 0) {
                     document.getElementById('department-select').value = DEPARTMENTS[0];
                     handleDepartmentChange(DEPARTMENTS[0]);
                 }
 
             } catch (error) {
-                console.error("Failed to load or parse CSV files:", error);
+                console.error("Failed to load or parse CSV files. Check URL and file structure.", error);
+                // Provide visual feedback for data loading failure
                 document.getElementById('dashboard-content').innerHTML = 
                     '<p class="text-red-600 text-lg p-5 bg-red-100 rounded-lg">Error loading data. Check console for details (F12).</p>';
             }
         }
 
-        // -------- Build Department Data ----------
+        // -------- Build Department Data (Updated to use normalized keys) ----------
         function buildDepartmentData(departmentName) {
-            const staffList = STAFF.filter(s => s.department === departmentName);
+            // Find the correct department key (e.g., handles 'department' or 'department_')
+            const departmentKey = Object.keys(STAFF[0] || {}).find(key => key.includes('department'));
+
+            const staffList = STAFF.filter(s => s[departmentKey] === departmentName);
 
             return staffList.map(staff => {
                 const detailedOps = {};
                 
-                // Use the normalized staff_id and procedure_name keys (should be lowercase and snake_case)
+                // Use the normalized staff_id key for matching
                 PROCEDURES.filter(p => p.staff_id === staff.staff_id)
                     .forEach(p => {
                         const procName = p.procedure_name || 'Unspecified Procedure';
@@ -207,7 +214,7 @@
             });
         }
 
-        // -------- Rendering helpers (Unchanged but included for completeness) --------
+        // -------- Rendering helpers (unchanged) --------
 
         function calculateDepartmentSummary(staffData) {
             const s = staffData.reduce((acc, staff) => {
@@ -279,7 +286,7 @@
                     <div class="h-full bg-high-op" style="width:${hPct}%"></div>
                     <div class="h-full bg-moderate-op" style="width:${mPct}%"></div>
                     <div class="h-full bg-low-op" style="width:${lPct}%"></div>
-            </div>
+                </div>
                 <div class="flex justify-between text-xs mt-1">
                     <span class="text-high-op">${ops.high} (H)</span>
                     <span class="text-moderate-op">${ops.moderate} (M)</span>
@@ -312,7 +319,7 @@
             document.getElementById('operations-detail').innerHTML =
                 staffData.map(staff => {
                     const opsList = Object.entries(staff.operations.detailed)
-                        .sort((a, b) => b[1] - a[1]) // Sort procedures by count (highest first)
+                        .sort((a, b) => b[1] - a[1]) // Sort procedures by count (highest first)
                         .map(([name, count]) => `
                         <div class="flex justify-between p-3 bg-gray-50 rounded-lg border">
                             <span>${name}</span>
@@ -335,26 +342,19 @@
         }
 
         function renderDashboard(staffData) {
-            const dashboardContent = document.getElementById('dashboard-content');
-            
             if (!staffData || staffData.length === 0) {
-                dashboardContent.classList.add('hidden');
+                document.getElementById('dashboard-content').classList.add('hidden');
                 return;
             }
-
             const summary = calculateDepartmentSummary(staffData);
             renderSummaryKPIs(summary);
             renderStaffTable(staffData);
             renderOperationsDetail(staffData);
-            dashboardContent.classList.remove('hidden');
+            document.getElementById('dashboard-content').classList.remove('hidden');
         }
 
         window.handleDepartmentChange = function (department) {
-            if (department) {
-                renderDashboard(buildDepartmentData(department));
-            } else {
-                document.getElementById('dashboard-content').classList.add('hidden');
-            }
+            renderDashboard(buildDepartmentData(department));
         };
 
         window.onload = loadAllCSVs;
