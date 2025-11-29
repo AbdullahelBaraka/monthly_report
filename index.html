@@ -59,7 +59,8 @@
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
-            const rows = text.trim().split("\n").map(r => r.split(","));
+            // ✅ Changed from comma to tab delimiter
+            const rows = text.trim().split("\n").map(r => r.split("\t"));
             const headers = rows.shift();
             return rows.map(row => {
                 const obj = {};
