@@ -98,13 +98,15 @@
 
     <script type="module">
 
-        // ---------------- CSV Loader (FIXED) ----------------
+        // ---------------- CSV Loader (Flexible Comma/Tab) ----------------
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
 
-            // Split by line, then by comma
-            const rows = text.trim().split("\n").map(r => r.split(",").map(c => c.trim()));
+            // Detect delimiter: if tab exists, use tab, else comma
+            const delimiter = text.includes("\t") ? "\t" : ",";
+
+            const rows = text.trim().split("\n").map(r => r.split(delimiter).map(c => c.trim()));
             const headers = rows.shift();
 
             return rows.map(row => {
@@ -115,7 +117,7 @@
         }
 
         // ----------- GitHub CSV URLs --------------
-        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/master/";
+        const BASE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/";
 
         let STAFF = [];
         let PROCEDURES = [];
