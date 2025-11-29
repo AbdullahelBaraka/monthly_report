@@ -98,22 +98,24 @@
 
     <script type="module">
 
-        // ---------------- CSV Loader ----------------
+        // ---------------- CSV Loader (FIXED) ----------------
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
-            // ✅ FIX: handle tab-separated CSVs
-            const rows = text.trim().split("\n").map(r => r.split("\t"));
+
+            // Split by line, then by comma
+            const rows = text.trim().split("\n").map(r => r.split(",").map(c => c.trim()));
             const headers = rows.shift();
+
             return rows.map(row => {
                 const obj = {};
-                row.forEach((val, i) => obj[headers[i]] = val.trim());
+                row.forEach((val, i) => obj[headers[i]] = val);
                 return obj;
             });
         }
 
         // ----------- GitHub CSV URLs --------------
-        const BASE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/";
+        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/master/";
 
         let STAFF = [];
         let PROCEDURES = [];
