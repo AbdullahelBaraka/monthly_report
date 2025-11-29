@@ -102,8 +102,7 @@
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
-            // ✅ FIX: changed from comma to tab since CSVs are tab-separated
-            const rows = text.trim().split("\n").map(r => r.split("\t"));
+            const rows = text.trim().split("\n").map(r => r.split(","));
             const headers = rows.shift();
             return rows.map(row => {
                 const obj = {};
