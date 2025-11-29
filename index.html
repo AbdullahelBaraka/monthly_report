@@ -111,97 +111,61 @@
             });
         }
 
+        // ----------- GitHub CSV URLs --------------
+        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/main/";
 
-        // ----------- GitHub CSV URLs (Restored to correct path) --------------
-        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/main/";
+        let STAFF = [];
+        let PROCEDURES = [];
+        let DEPARTMENTS = [];
 
-        let STAFF = [];
-        let PROCEDURES = [];
-        let DEPARTMENTS = [];
+        // -------- Format Currency ----------
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+        });
 
-        // -------- Format Currency ----------
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0
-        });
-        
-        // -------- Function to populate the dropdown (Was missing in original code) ----------
-        function populateDepartmentSelect(departments) {
-            const select = document.getElementById('department-select');
+        // -------- Load CSV Files ----------
+        async function loadAllCSVs() {
+            STAFF = await loadCSV(BASE_URL + "staff.csv");
+            PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
 
-            departments.forEach(dept => {
-                const option = document.createElement('option');
-                option.value = dept;
-                option.textContent = dept;
-                select.appendChild(option);
-            });
-        }
+            DEPARTMENTS = [...new Set(STAFF.map(s => s.department))];
 
-        // -------- Load CSV Files (Updated to use robust loadCSV) ----------
-        async function loadAllCSVs() {
-            try {
-                STAFF = await loadCSV(BASE_URL + "staff.csv");
-                PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
+            populateDepartmentSelect(DEPARTMENTS);
+        }
 
-                // Find the correct department key (e.g., handles 'department' or 'department ')
-                const departmentKey = Object.keys(STAFF[0] || {}).find(key => key.includes('department'));
-                
-                // Ensure departments are extracted using the correct key and filter out empty values
-                DEPARTMENTS = [...new Set(STAFF.map(s => s[departmentKey]).filter(Boolean))];
+        // -------- Build Department Data ----------
+        function buildDepartmentData(departmentName) {
+            const staffList = STAFF.filter(s => s.department === departmentName);
 
-                populateDepartmentSelect(DEPARTMENTS);
-                
-                // Automatically select the first department if data is present
-                if (DEPARTMENTS.length > 0) {
-                    document.getElementById('department-select').value = DEPARTMENTS[0];
-                    handleDepartmentChange(DEPARTMENTS[0]);
-                }
+            return staffList.map(staff => {
+                const detailedOps = {};
+                PROCEDURES.filter(p => p.staff_id === staff.staff_id)
+                    .forEach(p => {
+                        if (!detailedOps[p.procedure_name])
+                            detailedOps[p.procedure_name] = 0;
+                        detailedOps[p.procedure_name]++;
+                    });
 
-            } catch (error) {
-                console.error("Failed to load or parse CSV files. Check URL and file structure.", error);
-                // Provide visual feedback for data loading failure
-                document.getElementById('dashboard-content').innerHTML = 
-                    '<p class="text-red-600 text-lg p-5 bg-red-100 rounded-lg">Error loading data. Check console for details (F12).</p>';
-            }
-        }
+                return {
+                    id: staff.staff_id,
+                    name: staff.name,
+                    shifts: Number(staff.shifts),
+                    clinics: Number(staff.clinics),
+                    salary: Number(staff.salary),
+                    income: Number(staff.income),
+                    operations: {
+                        total: Number(staff.total_ops),
+                        high: Number(staff.high),
+                        moderate: Number(staff.moderate),
+                        low: Number(staff.low),
+                        detailed: detailedOps
+                    }
+                };
+            });
+        }
 
-        // -------- Build Department Data (Updated to use normalized keys) ----------
-        function buildDepartmentData(departmentName) {
-            // Find the correct department key (e.g., handles 'department' or 'department_')
-            const departmentKey = Object.keys(STAFF[0] || {}).find(key => key.includes('department'));
-
-            const staffList = STAFF.filter(s => s[departmentKey] === departmentName);
-
-            return staffList.map(staff => {
-                const detailedOps = {};
-                
-                // Use the normalized staff_id key for matching
-                PROCEDURES.filter(p => p.staff_id === staff.staff_id)
-                    .forEach(p => {
-                        const procName = p.procedure_name || 'Unspecified Procedure';
-                        if (!detailedOps[procName])
-                            detailedOps[procName] = 0;
-                        detailedOps[procName]++;
-                    });
-
-                return {
-                    id: staff.staff_id,
-                    name: staff.name,
-                    shifts: Number(staff.shifts),
-                    clinics: Number(staff.clinics),
-                    salary: Number(staff.salary),
-                    income: Number(staff.income),
-                    operations: {
-                        total: Number(staff.total_ops),
-                        high: Number(staff.high),
-                        moderate: Number(staff.moderate),
-                        low: Number(staff.low),
-                        detailed: detailedOps
-                    }
-                };
-            });
-        }
         // -------- Rendering helpers (unchanged) --------
 
         function calculateDepartmentSummary(staffData) {
