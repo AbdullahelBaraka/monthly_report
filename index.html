@@ -3,99 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department Performance Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Physician Productivity Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1D4ED8',
+                        'secondary-gray': '#F9FAFB',
+                        'high-op': '#EF4444',
+                        'moderate-op': '#F59E0B',
+                        'low-op': '#10B981',
+                        'salary-pink': '#EC4899',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f4f4f4;
-        }
-        h2 {
-            text-align: center;
-        }
-        select {
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body>
 
-    <h2>Department Monthly Report</h2>
+<body class="bg-secondary-gray min-h-screen font-sans">
 
-    <center>
-        <select id="departmentSelect">
-            <option value="">Select Department</option>
-        </select>
-    </center>
+    <div id="app" class="p-4 md:p-8 max-w-7xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 flex items-center">
+                <i data-lucide="activity" class="w-8 h-8 mr-3 text-primary-blue"></i>
+                Physician Productivity Analysis
+            </h1>
+            <p class="text-gray-500 mt-1">Monthly Key Performance Indicators (KPIs) Overview</p>
+        </header>
 
-    <div id="dashboard-content" class="dashboard hidden">
-        <div class="card"><canvas id="shiftsClinicsChart"></canvas></div>
-        <div class="card"><canvas id="salaryIncomeChart"></canvas></div>
-        <div class="card"><canvas id="operationsChart"></canvas></div>
-        <div class="card"><canvas id="complexityChart"></canvas></div>
+        <!-- Department Selection -->
+        <div class="mb-8 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <label for="department-select" class="block text-sm font-medium text-gray-700 mb-2">Select Department</label>
+            <select id="department-select" onchange="handleDepartmentChange(this.value)"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm rounded-lg shadow-sm transition duration-150 ease-in-out">
+                <option value="">-- Please Select a Department --</option>
+            </select>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="space-y-10 hidden">
+
+            <!-- 1. Summary -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Department Summary</h2>
+                <div id="summary-kpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
+
+            <!-- 2. Staff Table -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Staff Productivity</h2>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Physician</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shifts</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Clinics</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Ops</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salary</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gross Income</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Net Income</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Op Breakdown</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Detailed Ops -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Detailed Operations Count by Procedure</h2>
+                <div id="operations-detail" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+            </section>
+
+        </div>
     </div>
 
-    <script>
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ CSV LOADING
-        ////////////////////////////////////////////////////////////////////////////
+    <script type="module">
 
-        const BASE_URL = "https://raw.githubusercontent.com/AbdullahelBaraka/monthly_report/master/";
-
+        // ---------------- CSV Loader ----------------
         async function loadCSV(url) {
             const res = await fetch(url);
             const text = await res.text();
-            // ✅ Changed from comma to tab delimiter
+            // ✅ FIX: changed from comma to tab since CSVs are tab-separated
             const rows = text.trim().split("\n").map(r => r.split("\t"));
             const headers = rows.shift();
             return rows.map(row => {
                 const obj = {};
-                row.forEach((val, idx) => obj[headers[idx]] = val.trim());
+                row.forEach((val, i) => obj[headers[i]] = val.trim());
                 return obj;
             });
         }
+
+        // ----------- GitHub CSV URLs --------------
+        const BASE_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/";
 
         let STAFF = [];
         let PROCEDURES = [];
         let DEPARTMENTS = [];
 
+        // -------- Format Currency ----------
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+        });
+
+        // -------- Load CSV Files ----------
         async function loadAllCSVs() {
             STAFF = await loadCSV(BASE_URL + "staff.csv");
             PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
 
             DEPARTMENTS = [...new Set(STAFF.map(s => s.department))];
+
             populateDepartmentSelect(DEPARTMENTS);
         }
 
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ BUILD STAFF DATA OBJECT
-        ////////////////////////////////////////////////////////////////////////////
-
+        // -------- Build Department Data ----------
         function buildDepartmentData(departmentName) {
             const staffList = STAFF.filter(s => s.department === departmentName);
 
             return staffList.map(staff => {
-                const staffProcedures = PROCEDURES.filter(p => p.staff_id === staff.staff_id);
-
-                const detailed = {};
-                staffProcedures.forEach(p => {
-                    if (!detailed[p.procedure_name]) detailed[p.procedure_name] = 0;
-                    detailed[p.procedure_name]++;
-                });
+                const detailedOps = {};
+                PROCEDURES.filter(p => p.staff_id === staff.staff_id)
+                    .forEach(p => {
+                        if (!detailedOps[p.procedure_name])
+                            detailedOps[p.procedure_name] = 0;
+                        detailedOps[p.procedure_name]++;
+                    });
 
                 return {
                     id: staff.staff_id,
@@ -109,135 +161,155 @@
                         high: Number(staff.high),
                         moderate: Number(staff.moderate),
                         low: Number(staff.low),
-                        detailed: detailed
+                        detailed: detailedOps
                     }
                 };
             });
         }
 
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ POPULATE DEPARTMENT DROPDOWN
-        ////////////////////////////////////////////////////////////////////////////
+        // -------- Rendering helpers (unchanged) --------
 
-        function populateDepartmentSelect(list) {
-            const select = document.getElementById("departmentSelect");
-
-            list.forEach(dep => {
-                const option = document.createElement("option");
-                option.value = dep;
-                option.textContent = dep;
-                select.appendChild(option);
+        function calculateDepartmentSummary(staffData) {
+            const s = staffData.reduce((acc, staff) => {
+                acc.totalShifts += staff.shifts;
+                acc.totalClinics += staff.clinics;
+                acc.totalOperations += staff.operations.total;
+                acc.totalHigh += staff.operations.high;
+                acc.totalModerate += staff.operations.moderate;
+                acc.totalLow += staff.operations.low;
+                acc.totalIncome += staff.income;
+                acc.totalSalary += staff.salary;
+                return acc;
+            }, {
+                totalShifts: 0,
+                totalClinics: 0,
+                totalOperations: 0,
+                totalHigh: 0,
+                totalModerate: 0,
+                totalLow: 0,
+                totalIncome: 0,
+                totalSalary: 0,
             });
-
-            select.addEventListener("change", () => {
-                const department = select.value;
-                if (department) fetchDataAndRender(department);
-            });
+            return s;
         }
 
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ RENDER MAIN DASHBOARD
-        ////////////////////////////////////////////////////////////////////////////
+        function renderSummaryKPIs(summary) {
+            const netIncome = summary.totalIncome - summary.totalSalary;
 
-        let chartInstances = {};
+            const allKpis = [
+                { title: 'Total Shifts', value: summary.totalShifts, icon: 'sun', color: 'text-primary-blue', bgColor: 'bg-blue-50', border: 'border-primary-blue' },
+                { title: 'Opened Clinics', value: summary.totalClinics, icon: 'hospital', color: 'text-green-600', bgColor: 'bg-green-50', border: 'border-green-600' },
+                { title: 'Total Operations', value: summary.totalOperations, icon: 'scalpel', color: 'text-gray-600', bgColor: 'bg-gray-100', border: 'border-gray-300' },
+
+                { title: 'Gross Income', value: formatter.format(summary.totalIncome), icon: 'wallet', color: 'text-yellow-600', bgColor: 'bg-yellow-50', border: 'border-yellow-600' },
+                { title: 'Total Staff Salary', value: formatter.format(summary.totalSalary), icon: 'dollar-sign', color: 'text-salary-pink', bgColor: 'bg-pink-50', border: 'border-salary-pink' },
+                { title: 'Net Income', value: formatter.format(netIncome), icon: 'trending-up', color: 'text-indigo-600', bgColor: 'bg-indigo-50', border: 'border-indigo-600' },
+
+                { title: 'High-Complexity Ops', value: summary.totalHigh, icon: 'flame', color: 'text-high-op', bgColor: 'bg-red-50', border: 'border-high-op' },
+                { title: 'Moderate-Complexity Ops', value: summary.totalModerate, icon: 'shield-half', color: 'text-moderate-op', bgColor: 'bg-yellow-50', border: 'border-moderate-op' },
+                { title: 'Low-Complexity Ops', value: summary.totalLow, icon: 'check-circle', color: 'text-low-op', bgColor: 'bg-green-50', border: 'border-low-op' },
+            ];
+
+            document.getElementById('summary-kpis').innerHTML =
+                allKpis.map(kpi => `
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 ${kpi.border}">
+                    <div class="flex items-start">
+                        <div class="p-3 rounded-full ${kpi.bgColor} ${kpi.color} mr-3">
+                            <i data-lucide="${kpi.icon}" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">${kpi.title}</p>
+                            <p class="text-3xl font-extrabold text-gray-900">${kpi.value}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function renderOpBreakdown(ops) {
+            if (ops.total == 0) return `<div>No Data</div>`;
+            const hPct = (ops.high / ops.total) * 100;
+            const mPct = (ops.moderate / ops.total) * 100;
+            const lPct = (ops.low / ops.total) * 100;
+
+            return `
+                <div class="w-full bg-gray-200 rounded-full h-2.5 flex overflow-hidden">
+                    <div class="h-full bg-high-op" style="width:${hPct}%"></div>
+                    <div class="h-full bg-moderate-op" style="width:${mPct}%"></div>
+                    <div class="h-full bg-low-op" style="width:${lPct}%"></div>
+                </div>
+                <div class="flex justify-between text-xs mt-1">
+                    <span class="text-high-op">${ops.high} (H)</span>
+                    <span class="text-moderate-op">${ops.moderate} (M)</span>
+                    <span class="text-low-op">${ops.low} (L)</span>
+                </div>
+            `;
+        }
+
+        function renderStaffTable(staffData) {
+            document.getElementById('staff-table-body').innerHTML = staffData
+                .map(staff => {
+                    const net = staff.income - staff.salary;
+                    const color = net >= 0 ? 'text-low-op' : 'text-high-op';
+
+                    return `
+                    <tr>
+                        <td class="px-6 py-4">${staff.name}</td>
+                        <td class="px-6 py-4">${staff.shifts}</td>
+                        <td class="px-6 py-4">${staff.clinics}</td>
+                        <td class="px-6 py-4 text-primary-blue font-bold">${staff.operations.total}</td>
+                        <td class="px-6 py-4 text-salary-pink font-bold">${formatter.format(staff.salary)}</td>
+                        <td class="px-6 py-4">${formatter.format(staff.income)}</td>
+                        <td class="px-6 py-4 ${color} font-bold">${formatter.format(net)}</td>
+                        <td class="px-6 py-4 w-48">${renderOpBreakdown(staff.operations)}</td>
+                    </tr>`;
+                }).join('');
+        }
+
+        function renderOperationsDetail(staffData) {
+            document.getElementById('operations-detail').innerHTML =
+                staffData.map(staff => {
+                    const opsList = Object.entries(staff.operations.detailed)
+                        .map(([name, count]) => `
+                        <div class="flex justify-between p-3 bg-gray-50 rounded-lg border">
+                            <span>${name}</span>
+                            <span class="text-primary-blue font-bold">${count}</span>
+                        </div>`).join('');
+
+                    return `
+                    <div class="bg-white p-5 rounded-xl shadow-md border">
+                        <div class="flex items-center mb-4 pb-2 border-b">
+                            <i data-lucide="user" class="w-5 h-5 mr-2 text-primary-blue"></i>
+                            <h3 class="font-semibold text-lg">${staff.name}</h3>
+                        </div>
+                        <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar">
+                            ${opsList || '<p class="text-gray-500 italic">No operations logged</p>'}
+                        </div>
+                    </div>`;
+                }).join('');
+
+            lucide.createIcons();
+        }
 
         function renderDashboard(staffData) {
-            document.getElementById("dashboard-content").classList.remove("hidden");
-
-            const names = staffData.map(s => s.name);
-
-            destroyCharts();
-
-            createBarChart("shiftsClinicsChart", names,
-                staffData.map(s => s.shifts),
-                staffData.map(s => s.clinics),
-                "Shifts", "Clinics");
-
-            createBarChart("salaryIncomeChart", names,
-                staffData.map(s => s.salary),
-                staffData.map(s => s.income),
-                "Salary", "Income");
-
-            createStackedBarChart("operationsChart", names, {
-                High: staffData.map(s => s.operations.high),
-                Moderate: staffData.map(s => s.operations.moderate),
-                Low: staffData.map(s => s.operations.low)
-            });
-
-            createPieChart("complexityChart", {
-                High: staffData.reduce((a, b) => a + b.operations.high, 0),
-                Moderate: staffData.reduce((a, b) => a + b.operations.moderate, 0),
-                Low: staffData.reduce((a, b) => a + b.operations.low, 0)
-            });
+            if (staffData.length === 0) {
+                document.getElementById('dashboard-content').classList.add('hidden');
+                return;
+            }
+            const summary = calculateDepartmentSummary(staffData);
+            renderSummaryKPIs(summary);
+            renderStaffTable(staffData);
+            renderOperationsDetail(staffData);
+            document.getElementById('dashboard-content').classList.remove('hidden');
         }
 
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ FETCH DATA
-        ////////////////////////////////////////////////////////////////////////////
+        window.handleDepartmentChange = function (department) {
+            renderDashboard(buildDepartmentData(department));
+        };
 
-        function fetchDataAndRender(departmentName) {
-            const staffData = buildDepartmentData(departmentName);
-            renderDashboard(staffData);
-        }
-
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ CHART HELPERS
-        ////////////////////////////////////////////////////////////////////////////
-
-        function destroyCharts() {
-            for (const key in chartInstances) chartInstances[key].destroy();
-        }
-
-        function createBarChart(id, labels, data1, data2, lbl1, lbl2) {
-            const ctx = document.getElementById(id).getContext("2d");
-            chartInstances[id] = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: lbl1, data: data1, backgroundColor: "#4e79a7" },
-                        { label: lbl2, data: data2, backgroundColor: "#f28e2c" }
-                    ]
-                }
-            });
-        }
-
-        function createStackedBarChart(id, labels, datasets) {
-            const ctx = document.getElementById(id).getContext("2d");
-
-            chartInstances[id] = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: labels,
-                    datasets: Object.keys(datasets).map((key, idx) => ({
-                        label: key,
-                        data: datasets[key],
-                        backgroundColor: ["#d62728", "#ffbf00", "#59a14f"][idx]
-                    }))
-                },
-                options: { scales: { x: { stacked: true }, y: { stacked: true } } }
-            });
-        }
-
-        function createPieChart(id, dataObj) {
-            const ctx = document.getElementById(id).getContext("2d");
-            chartInstances[id] = new Chart(ctx, {
-                type: "pie",
-                data: {
-                    labels: Object.keys(dataObj),
-                    datasets: [{
-                        data: Object.values(dataObj),
-                        backgroundColor: ["#d62728", "#ffbf00", "#59a14f"]
-                    }]
-                }
-            });
-        }
-
-        ////////////////////////////////////////////////////////////////////////////
-        // ⚡ INIT
-        ////////////////////////////////////////////////////////////////////////////
-
-        loadAllCSVs();
+        window.onload = loadAllCSVs;
     </script>
 
 </body>
