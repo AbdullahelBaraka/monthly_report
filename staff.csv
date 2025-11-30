@@ -1,8 +1,8 @@
-staff_id,name,department,shifts,clinics,salary,income,total_ops,high,moderate,low
-S101,Dr. John Smith,Cardiology,20,18,15000,45000,45,10,20,15
-S102,Dr. Jane Doe,Cardiology,18,18,12000,38000,35,5,15,15
-S103,Dr. Alok Patel,Cardiology,22,20,18000,52000,60,15,25,20
-S104,Dr. Ben Carter,Cardiology,17,16,11000,35000,30,7,13,10
-S201,Dr. Sarah Lee,Orthopedics,19,17,16000,48000,55,25,20,10
-S202,Dr. Mark Rivas,Orthopedics,21,19,14000,41000,40,18,15,7
-S301,Dr. Emily Chen,Pediatrics,20,20,10000,30000,25,3,10,12
+staff_id,name,department,shifts,clinics,salary,income,total_ops,elective_ops,emergency_ops,high,moderate,low
+S101,Dr. John Smith,Cardiology,20,18,15000,45000,45,30,15,10,20,15
+S102,Dr. Jane Doe,Cardiology,18,18,12000,38000,35,20,15,5,15,15
+S103,Dr. Alok Patel,Cardiology,22,20,18000,52000,60,40,20,15,25,20
+S104,Dr. Ben Carter,Cardiology,17,16,11000,35000,30,20,10,7,13,10
+S201,Dr. Sarah Lee,Orthopedics,19,17,16000,48000,55,35,20,25,20,10
+S202,Dr. Mark Rivas,Orthopedics,21,19,14000,41000,40,22,18,18,15,7
+S301,Dr. Emily Chen,Pediatrics,20,20,10000,30000,25,15,10,3,10,12
