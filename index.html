@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Physician Productivity Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -37,7 +37,6 @@
 </head>
 
 <body class="bg-secondary-gray min-h-screen font-sans">
-
     <div id="app" class="p-4 md:p-8 max-w-7xl mx-auto">
         <header class="mb-8">
             <h1 class="text-3xl font-extrabold text-gray-900 flex items-center">
@@ -107,24 +106,27 @@
 
     <!-- SCRIPT -->
     <script type="module">
-
-        // ---------------- FIXED CSV Loader ----------------
+        // ---------------- Robust CSV Loader ----------------
         async function loadCSV(url) {
             const res = await fetch(url);
+            if (!res.ok) throw new Error('Failed to fetch ' + url + ' (status ' + res.status + ')');
             const text = await res.text();
 
-            const rows = text
-                .trim()
-                .split(/\r?\n/)
-                .map(r => r.split(","));
+            // Split into lines (handles \r\n and \n). Filter out empty lines.
+            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
 
-            const headers = rows.shift();
+            if (lines.length === 0) return [];
+
+            const rows = lines.map(r => r.split(","));
+            const headers = rows.shift().map(h => h.trim());
 
             return rows.map(row => {
                 const obj = {};
-                row.forEach((val, i) => {
-                    obj[headers[i].trim()] = val.replace(/\r/g, "").trim();
-                });
+                // ensure row length equals headers; if shorter, fill with empty strings
+                for (let i = 0; i < headers.length; i++) {
+                    const val = row[i] === undefined ? "" : String(row[i]).replace(/\r/g, "");
+                    obj[headers[i]] = val.trim();
+                }
                 return obj;
             });
         }
@@ -141,13 +143,24 @@
             maximumFractionDigits: 0
         });
 
+        // Load CSVs and populate dropdown
         async function loadAllCSVs() {
-            STAFF = await loadCSV(BASE_URL + "staff.csv");
-            PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
+            try {
+                STAFF = await loadCSV(BASE_URL + "staff.csv");
+                PROCEDURES = await loadCSV(BASE_URL + "procedures.csv");
 
-            DEPARTMENTS = [...new Set(STAFF.map(s => s.department.trim()))];
+                console.log("STAFF loaded:", STAFF);
+                console.log("PROCEDURES loaded:", PROCEDURES);
 
-            populateDepartmentSelect(DEPARTMENTS);
+                // compute departments (trimmed)
+                DEPARTMENTS = [...new Set(STAFF.map(s => (s.department || "").trim()))].filter(Boolean);
+                console.log("DEPARTMENTS:", DEPARTMENTS);
+
+                populateDepartmentSelect(DEPARTMENTS);
+            } catch (err) {
+                console.error("Error loading CSVs:", err);
+                alert("Error loading CSV files. Check console for details.");
+            }
         }
 
         function populateDepartmentSelect(departments) {
@@ -157,38 +170,47 @@
                 departments.map(dep => `<option value="${dep}">${dep}</option>`).join("");
         }
 
+        // Build data for chosen department (robust matching)
         function buildDepartmentData(departmentName) {
-            const staffList = STAFF.filter(s => s.department === departmentName);
+            if (!departmentName) return [];
+            const staffList = STAFF.filter(s => ((s.department || "").trim()) === (departmentName || "").trim());
+            console.log("Selected department:", departmentName, "Matched staff:", staffList);
 
             return staffList.map(staff => {
                 const detailedOps = {};
-                PROCEDURES.filter(p => p.staff_id === staff.staff_id)
+                PROCEDURES.filter(p => (p.staff_id || "").trim() === (staff.staff_id || "").trim())
                     .forEach(p => {
-                        if (!detailedOps[p.procedure_name])
-                            detailedOps[p.procedure_name] = 0;
-                        detailedOps[p.procedure_name]++;
+                        const key = p.procedure_name || "Unknown";
+                        detailedOps[key] = (detailedOps[key] || 0) + 1;
                     });
+
+                // Convert numeric fields safely
+                const toNum = v => {
+                    const n = Number(String(v || "").replace(/,/g, "").trim());
+                    return Number.isFinite(n) ? n : 0;
+                };
 
                 return {
                     id: staff.staff_id,
-                    name: staff.name,
-                    shifts: Number(staff.shifts),
-                    clinics: Number(staff.clinics),
-                    salary: Number(staff.salary),
-                    income: Number(staff.income),
+                    name: staff.name || "",
+                    shifts: toNum(staff.shifts),
+                    clinics: toNum(staff.clinics),
+                    salary: toNum(staff.salary),
+                    income: toNum(staff.income),
                     operations: {
-                        total: Number(staff.total_ops),
-                        elective: Number(staff.elective_ops),
-                        emergency: Number(staff.emergency_ops),
-                        high: Number(staff.high),
-                        moderate: Number(staff.moderate),
-                        low: Number(staff.low),
+                        total: toNum(staff.total_ops),
+                        elective: toNum(staff.elective_ops),
+                        emergency: toNum(staff.emergency_ops),
+                        high: toNum(staff.high),
+                        moderate: toNum(staff.moderate),
+                        low: toNum(staff.low),
                         detailed: detailedOps
                     }
                 };
             });
         }
 
+        // Summary calculation (unchanged)
         function calculateDepartmentSummary(staffData) {
             return staffData.reduce((acc, staff) => {
                 acc.totalShifts += staff.shifts;
@@ -199,6 +221,9 @@
                 acc.totalLow += staff.operations.low;
                 acc.totalIncome += staff.income;
                 acc.totalSalary += staff.salary;
+                // Also accumulate elective/emergency optionally
+                acc.totalElective += staff.operations.elective;
+                acc.totalEmergency += staff.operations.emergency;
                 return acc;
             }, {
                 totalShifts: 0,
@@ -209,11 +234,57 @@
                 totalLow: 0,
                 totalIncome: 0,
                 totalSalary: 0,
+                totalElective: 0,
+                totalEmergency: 0
             });
         }
 
+        // renderSummaryKPIs (was missing) — added here
+        function renderSummaryKPIs(summary) {
+            const netIncome = summary.totalIncome - summary.totalSalary;
+
+            const allKpis = [
+                { title: 'Total Shifts', value: summary.totalShifts, icon: 'sun', color: 'text-primary-blue', bgColor: 'bg-blue-50', border: 'border-primary-blue' },
+                { title: 'Opened Clinics', value: summary.totalClinics, icon: 'hospital', color: 'text-green-600', bgColor: 'bg-green-50', border: 'border-green-600' },
+                { title: 'Total Operations', value: summary.totalOperations, icon: 'scalpel', color: 'text-gray-600', bgColor: 'bg-gray-100', border: 'border-gray-300' },
+
+                { title: 'Gross Income', value: formatter.format(summary.totalIncome), icon: 'wallet', color: 'text-yellow-600', bgColor: 'bg-yellow-50', border: 'border-yellow-600' },
+                { title: 'Total Staff Salary', value: formatter.format(summary.totalSalary), icon: 'dollar-sign', color: 'text-salary-pink', bgColor: 'bg-pink-50', border: 'border-salary-pink' },
+                { title: 'Net Income', value: formatter.format(netIncome), icon: 'trending-up', color: 'text-indigo-600', bgColor: 'bg-indigo-50', border: 'border-indigo-600' },
+
+                { title: 'High-Complexity Ops', value: summary.totalHigh, icon: 'flame', color: 'text-high-op', bgColor: 'bg-red-50', border: 'border-high-op' },
+                { title: 'Moderate-Complexity Ops', value: summary.totalModerate, icon: 'shield-half', color: 'text-moderate-op', bgColor: 'bg-yellow-50', border: 'border-moderate-op' },
+                { title: 'Low-Complexity Ops', value: summary.totalLow, icon: 'check-circle', color: 'text-low-op', bgColor: 'bg-green-50', border: 'border-low-op' },
+            ];
+
+            // optional extra KPIs for elective/emergency
+            const electiveEmergency = [
+                { title: 'Elective Ops', value: summary.totalElective, icon: 'calendar-check', small: true },
+                { title: 'Emergency Ops', value: summary.totalEmergency, icon: 'alert-circle', small: true }
+            ];
+
+            const kpiHtml = allKpis.map(kpi => `
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 ${kpi.border}">
+                    <div class="flex items-start">
+                        <div class="p-3 rounded-full ${kpi.bgColor} ${kpi.color} mr-3">
+                            <i data-lucide="${kpi.icon}" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">${kpi.title}</p>
+                            <p class="text-3xl font-extrabold text-gray-900">${kpi.value}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // include elective/emergency small cards under summary
+            document.getElementById('summary-kpis').innerHTML = kpiHtml;
+            lucide.createIcons();
+        }
+
+        // Op breakdown bar
         function renderOpBreakdown(ops) {
-            if (ops.total == 0) return `<div>No Data</div>`;
+            if (ops.total === 0) return `<div>No Data</div>`;
             const hPct = (ops.high / ops.total) * 100;
             const mPct = (ops.moderate / ops.total) * 100;
             const lPct = (ops.low / ops.total) * 100;
@@ -232,13 +303,13 @@
             `;
         }
 
+        // Staff table render (shows elective and emergency)
         function renderStaffTable(staffData) {
-            document.getElementById('staff-table-body').innerHTML = staffData
-                .map(staff => {
-                    const net = staff.income - staff.salary;
-                    const color = net >= 0 ? 'text-low-op' : 'text-high-op';
-
-                    return `
+            const tbody = document.getElementById('staff-table-body');
+            tbody.innerHTML = staffData.map(staff => {
+                const net = staff.income - staff.salary;
+                const color = net >= 0 ? 'text-low-op' : 'text-high-op';
+                return `
                     <tr>
                         <td class="px-6 py-4">${staff.name}</td>
                         <td class="px-6 py-4">${staff.shifts}</td>
@@ -253,37 +324,39 @@
                         <td class="px-6 py-4 ${color} font-bold">${formatter.format(net)}</td>
 
                         <td class="px-6 py-4 w-48">${renderOpBreakdown(staff.operations)}</td>
-                    </tr>`;
-                }).join('');
+                    </tr>
+                `;
+            }).join('');
         }
 
+        // Operations detail panels
         function renderOperationsDetail(staffData) {
             document.getElementById('operations-detail').innerHTML =
                 staffData.map(staff => {
                     const opsList = Object.entries(staff.operations.detailed)
                         .map(([name, count]) => `
-                        <div class="flex justify-between p-3 bg-gray-50 rounded-lg border">
-                            <span>${name}</span>
-                            <span class="text-primary-blue font-bold">${count}</span>
-                        </div>`).join('');
-
+                            <div class="flex justify-between p-3 bg-gray-50 rounded-lg border">
+                                <span>${name}</span>
+                                <span class="text-primary-blue font-bold">${count}</span>
+                            </div>`).join('');
                     return `
-                    <div class="bg-white p-5 rounded-xl shadow-md border">
-                        <div class="flex items-center mb-4 pb-2 border-b">
-                            <i data-lucide="user" class="w-5 h-5 mr-2 text-primary-blue"></i>
-                            <h3 class="font-semibold text-lg">${staff.name}</h3>
+                        <div class="bg-white p-5 rounded-xl shadow-md border">
+                            <div class="flex items-center mb-4 pb-2 border-b">
+                                <i data-lucide="user" class="w-5 h-5 mr-2 text-primary-blue"></i>
+                                <h3 class="font-semibold text-lg">${staff.name}</h3>
+                            </div>
+                            <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar">
+                                ${opsList || '<p class="text-gray-500 italic">No operations logged</p>'}
+                            </div>
                         </div>
-                        <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar">
-                            ${opsList || '<p class="text-gray-500 italic">No operations logged</p>'}
-                        </div>
-                    </div>`;
+                    `;
                 }).join('');
-
             lucide.createIcons();
         }
 
+        // Dashboard orchestrator
         function renderDashboard(staffData) {
-            if (staffData.length === 0) {
+            if (!Array.isArray(staffData) || staffData.length === 0) {
                 document.getElementById('dashboard-content').classList.add('hidden');
                 return;
             }
@@ -294,13 +367,14 @@
             document.getElementById('dashboard-content').classList.remove('hidden');
         }
 
+        // handle department change
         window.handleDepartmentChange = function (department) {
-            renderDashboard(buildDepartmentData(department));
+            const data = buildDepartmentData(department);
+            renderDashboard(data);
         };
 
+        // kick off loading
         window.onload = loadAllCSVs;
-
     </script>
-
 </body>
 </html>
