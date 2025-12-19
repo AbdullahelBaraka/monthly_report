@@ -161,15 +161,17 @@ def generate_pdf(dept_df, department, detailed_tables, perf_table, op_source_tab
 st.markdown('<h1 class="main-title">🏥 Surgical Department Analytics</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Comprehensive Performance & Financial Analysis Dashboard</p>', unsafe_allow_html=True)
 
-with st.sidebar:
-    st.markdown("### 📁 Data Upload")
-    uploaded_file = st.file_uploader("Upload Department CSV", type=["csv"])
-    if uploaded_file:
-        st.success("✅ File uploaded!")
+@st.cache_data
+def load_data():
+    return pd.read_csv("data.csv")
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
+try:
+    df = load_data()
     df = clean_columns(df)
+except Exception as e:
+    st.error(f"❌ Failed to load data.csv: {e}")
+    st.stop()
+
     
     if "department" not in df.columns:
         st.error("❌ CSV must contain 'department' column")
@@ -363,5 +365,4 @@ if uploaded_file:
         except Exception as e:
             st.error(f"PDF generation failed: {e}")
 
-else:
-    st.info("📤 Please upload a CSV file to begin analysis")
+
