@@ -171,6 +171,16 @@ try:
 except Exception as e:
     st.error(f"❌ Failed to load data.csv: {e}")
     st.stop()
+with st.sidebar:
+    st.markdown("### 🏥 Department Selection")
+    
+    department = st.selectbox(
+        "Select Department",
+        sorted(df["department"].dropna().unique())
+    )
+    
+    st.metric("Total Departments", df["department"].nunique())
+    st.metric("Total Staff", len(df))
 
     
     if "department" not in df.columns:
