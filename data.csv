@@ -1,0 +1,181 @@
+staff name,department,degree,Contract type,total hours,opened clinic, Total visits,Operation total  number,total slary,total income,Net,opr_elective,opr_emergency,opr_high,opr_moderate,opr_low
+Ahmed Marrey,Neuro Surgery,Consultant,Contracted,1200,4,111,48,444000,2407650,1963650,31,17,30,11,7
+Ahmed Alsaeed Gabl,Neuro Surgery,Specialist,Contracted,150,0,0,0,25500,0,-25500,0,0,0,0,0
+Ahmed Refaat Alsyed,Neuro Surgery,Specialist,Contracted,1476,19,583,0,250920,87450,-163470,0,0,0,0,0
+Ahmed ramzy Abdelahafez,Neuro Surgery,Resident,Contracted,1476,0,0,0,194880,0,-194880,0,0,0,0,0
+Ahned samy mahmoud,Neuro Surgery,Resident,Contracted,1200,0,0,0,159000,0,-159000,0,0,0,0,0
+Ahmed adel zaky,Neuro Surgery,Specialist,Contracted,1476,11,387,0,250920,58050,-192870,0,0,0,0,0
+Ahmed attef Kotb,Neuro Surgery,Resident,Contracted,1236,2,64,0,163680,9600,-154080,0,0,0,0,0
+Ahmed ali alkholy,Neuro Surgery,Specialist,Contracted,468,3,39,0,79560,5850,-73710,0,0,0,0,0
+ahned amr abdelhameid,Neuro Surgery,Consultant,Contracted,984,0,0,44,364080,2222770,1858690,33,11,28,9,7
+ahmed al asr,Neuro Surgery,Specialist,Contracted,1116,3,102,0,189720,15300,-174420,0,0,0,0,0
+ahmed mohammed alshaer,Neuro Surgery,Resident,Contracted,1578,0,0,0,208140,0,-208140,0,0,0,0,0
+ahmed nasr zyada,Neuro Surgery,Resident,Contracted,1476,0,0,0,194880,0,-194880,0,0,0,0,0
+adham ezz aldein,Neuro Surgery,Consultant,Contracted,1044,3,73,47,386280,2467080,2080800,26,21,29,16,2
+andro armia noshy,Neuro Surgery,Specialist,Contracted,2010,36,1131,3,341700,289650,-52050,2,1,2,1,0
+tamim esawy,Neuro Surgery,Specialist,Contracted,210,0,0,0,35700,0,-35700,0,0,0,0,0
+hosam al sayyad,Neuro Surgery,Consultant,Contracted,126,0,0,0,47250,0,-47250,0,0,0,0,0
+david saleh,Neuro Surgery,Specialist,Contracted,1890,32,1055,3,321300,265450,-55850,2,1,1,1,1
+ramy ezzat saber,Neuro Surgery,Consultant,Contracted,150,0,0,0,56250,0,-56250,0,0,0,0,0
+moamen elwan hasan,Neuro Surgery,Consultant,Contracted,1026,2,39,53,380370,2746380,2366010,33,20,36,14,3
+michael zohny,Neuro Surgery,Specialist,Contracted,684,0,0,0,116280,0,-116280,0,0,0,0,0
+mohammed aboelwafa albarody,Neuro Surgery,Consultant,Contracted,1050,10,177,37,389460,2023110,1633650,23,14,23,10,4
+mohhamed alsayed beheiry,Neuro Surgery,Specialist,Contracted,300,0,0,0,51000,0,-51000,0,0,0,0,0
+mohammed tawfik mohammed,Neuro Surgery,Specialist,Contracted,150,0,0,0,25500,0,-25500,0,0,0,0,0
+nehal alsyaed ,Neuro Surgery,Consultant,Contracted,42,0,0,0,15750,0,-15750,0,0,0,0,0
+Asmaa Abdeldayiem,E.N.T,Resident,General,1009,0,0,0,121080,0,-121080,0,0,0,0,0
+Abo Lyazeid Abdalbasir,E.N.T,Resident,Contracted,564,0,0,43,73800,219270,145470,40,3,0,2,41
+Gorgenia Waheib,E.N.T,Resident,General,1314,0,0,0,157680,0,-157680,0,0,0,0,0
+Saied Mohammed Saad,E.N.T,Specialist,General,1547,116,3070,0,227220,460500,233280,0,0,0,0,0
+Ali Karam Ahmed,E.N.T,Resident,General,175,0,0,0,21000,0,-21000,0,0,0,0,0
+Mohammed Ahmed Ali,E.N.T,Resident,Contracted,504,2,6,16,66960,72650,5690,16,0,0,0,16
+Mohammed Abdelsattar,E.N.T,Resident,Contracted,342,0,0,9,47820,40050,-7770,9,0,0,0,9
+ahmed hussein hakeim,Vascular Surgery,Specialist,Contracted,2268,19,215,103,385560,1377920,992360,72,31,8,60,35
+abanoub gergis basheir,Vascular Surgery,Resident,General,1644,0,0,0,197280,0,-197280,0,0,0,0,0
+ibram adel abadir,Vascular Surgery,Resident,General,1657,0,0,0,198840,0,-198840,0,0,0,0,0
+armia elia saleib,Vascular Surgery,Consultant,Contracted,2166,44,876,110,801900,2146390,1344490,82,28,11,73,26
+bola nasry shafeik,Vascular Surgery,Specialist,Contracted,1564,0,0,3,265880,52380,-213500,1,2,1,1,1
+beshoy edward luiz,Vascular Surgery,Specialist,Contracted,2640,39,1307,103,603600,1731850,1128250,69,34,10,64,29
+kmal al dein mahmoud,Vascular Surgery,Resident,General,1685,0,0,0,202200,0,-202200,0,0,0,0,0
+mohammed alsyaed gaafr,Vascular Surgery,Resident,General,1645,0,0,0,197400,0,-197400,0,0,0,0,0
+mohammed adel abdelmaksoud,Vascular Surgery,Resident,General,492,0,0,0,59040,0,-59040,0,0,0,0,0
+mohammed abdelkhalik mohammed,Vascular Surgery,Consultant,Contracted,2945,29,740,18,1091230,362750,-728480,9,9,3,6,9
+ibrahim rajaey,Plastic Surgery,Resident,Contracted,1254,0,0,0,163020,0,-163020,0,0,0,0,0
+antonio adel alfy,Plastic Surgery,Resident,General,487,0,0,0,58440,0,-58440,0,0,0,0,0
+eman yahia mahmoud,Plastic Surgery,Resident,Contracted,1314,0,0,0,177180,0,-177180,0,0,0,0,0
+gorge gamil,Plastic Surgery,Consultant,Contracted,0,43,1026,221,0,2537590,2537590,114,107,5,123,93
+hazem atif ahmed,Plastic Surgery,Resident,General,1430,0,0,0,171600,0,-171600,0,0,0,0,0
+hamdan saady ,Maxillofacial Surgery,Consultant,Contracted,0,68,289,18,0,257370,257370,12,6,1,10,7
+safwat alyamany,Plastic Surgery,Resident,Contracted,1032,0,0,0,134160,0,-134160,0,0,0,0,0
+abdelrahman tarek,Plastic Surgery,Resident,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+abdullah hashim,Plastic Surgery,Specialist,Contracted,1278,20,460,122,217260,1319910,1102650,81,41,3,64,55
+ali mahmoud ali,Plastic Surgery,Specialist,Contracted,1278,24,649,132,217260,1446740,1229480,77,55,3,65,64
+karim ahmed desouky,Plastic Surgery,Resident,General,1067,0,0,0,128040,0,-128040,0,0,0,0,0
+mohammed alsyaed badawy,Plastic Surgery,Resident,Contracted,1644,9,219,108,228480,1319720,1091240,57,51,1,71,36
+mohammed alsyaed twafik,Plastic Surgery,Specialist,Contracted,1368,27,758,280,232560,3379910,3147350,160,120,6,180,94
+mohammed adel abdelahmeid,Plastic Surgery,Specialist,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+mohammed farouk abdelaziz,Plastic Surgery,Consultant,Contracted,0,0,0,41,0,451920,451920,28,13,0,24,17
+mohammed mahmoud khameis,Plastic Surgery,Resident,Contracted,492,0,0,0,63960,0,-63960,0,0,0,0,0
+maram ashraf lotfy,Plastic Surgery,Resident,General,1656,3,77,7,243360,99210,-144150,5,2,0,6,1
+mostaf mohammed hasan,Plastic Surgery,Specialist,Contracted,504,0,0,26,85680,286870,201190,15,11,1,13,12
+weam gamal,Plastic Surgery,Resident,General,1704,5,65,26,250560,300130,49570,17,9,0,13,13
+ahmed thabit badry,General Surgery,Specialist,Contracted,2460,27,792,140,418200,1413940,995740,104,36,2,58,80
+ahmed khairy ,General Surgery,Specialist,Contracted,1548,21,478,66,311160,681250,370090,40,26,1,25,40
+ahmed saied alsaady,General Surgery,Resident,General,1550,0,0,0,186000,0,-186000,0,0,0,0,0
+ahmed mohammed saada,General Surgery,Consultant,Contracted,1818,0,0,15,673590,201740,-471850,7,8,1,11,3
+ahmed mohammed safy,General Surgery,Consultant,Contracted,1572,0,0,44,582510,466450,-116060,40,4,2,22,20
+ahmedmohammed abdelmaksoud,Ped Surgery,Specialist,Contracted,2496,46,1024,194,424320,2229030,1804710,175,19,0,85,109
+ahmed hamhamy,Ped Surgery,Specialist,Contracted,294,0,0,3,49980,34850,-15130,3,0,0,2,1
+armia mekhael kamel,General Surgery,Resident,General,1639,0,0,2,196680,26140,-170540,2,0,0,2,0
+altayieb abd elmajeed,General Surgery,Specialist,Contracted,960,0,0,7,163200,52150,-111050,4,3,0,1,6
+beshoy khaiery haseib,General Surgery,Resident,General,1677,0,0,0,201240,0,-201240,0,0,0,0,0
+taghrid abdelakader,General Surgery,Resident,General,336,0,0,0,40320,0,-40320,0,0,0,0,0
+hosny mobarak mohammed,General Surgery,Specialist,Contracted,3000,37,1008,178,510000,1755180,1245180,133,45,2,60,116
+doaa ahmed kamel,General Surgery,Resident,General,668,0,0,0,80160,0,-80160,0,0,0,0,0
+sameh bolis sedrak,General Surgery,Resident,General,1653,0,0,0,198360,0,-198360,0,0,0,0,0
+samuel zahgr alfy,General Surgery,Resident,Contracted,1464,0,0,0,190320,0,-190320,0,0,0,0,0
+ali hasan ahmed,General Surgery,Resident,General,1716,0,0,0,205920,0,-205920,0,0,0,0,0
+ali mahmoud ali,General Surgery,Resident,General,1675,0,0,0,201000,0,-201000,0,0,0,0,0
+kerlous twadros,General Surgery,Resident,General,1665,0,0,0,199800,0,-199800,0,0,0,0,0
+mohammed moghazy,General Surgery,Specialist,Contracted,2610,27,982,187,443700,1972420,1528720,116,71,0,95,92
+mohammed nageh abdelsattar,General Surgery,Resident,General,1718,0,0,0,206160,0,-206160,0,0,0,0,0
+mahmoud gaber,General Surgery,Resident,General,1701,0,0,0,204120,0,-204120,0,0,0,0,0
+mahmoud abd elsattar,General Surgery,Specialist,Contracted,1962,26,786,111,333540,1162720,829180,74,37,0,55,56
+mahmoud abo zeid,General Surgery,Consultant,Contracted,1806,19,675,92,669090,1072590,403500,81,11,2,57,32
+mostaf amer sayed,General Surgery,Resident,General,1374,0,0,0,179520,0,-179520,0,0,0,0,0
+mostaf farrag mohammed,General Surgery,Specialist,Contracted,2580,35,882,127,438600,1130780,692180,89,38,0,44,83
+mostaf mahmoud mohammed,General Surgery,Resident,Contracted,822,0,0,2,106860,16640,-90220,0,2,0,1,1
+hany fokeh,General Surgery,Specialist,General,1670,21,659,105,250500,1152990,902490,92,13,1,58,46
+hedra adel ,General Surgery,Specialist,Contracted,1308,1,27,13,222360,103830,-118530,7,6,0,3,10
+ahmed adnan saad,Thoracic Surgery,Specialist,Contracted,1290,22,49,12,219300,172140,-47160,3,9,1,11,0
+ahmed makhlouf,Thoracic Surgery,Specialist,Contracted,828,1,2,3,140760,29130,-111630,2,1,0,3,0
+sandy adel,Thoracic Surgery,Resident,Contracted,1674,0,0,12,284580,138320,-146260,3,9,0,12,0
+omar arafat,Thoracic Surgery,Specialist,Contracted,576,5,7,4,97920,39490,-58430,0,4,0,4,0
+mohammed othman,Thoracic Surgery,Consultant,Contracted,1170,25,49,9,433440,154610,-278830,4,5,0,9,0
+mahmoud al khwaga,Thoracic Surgery,Consultant,Contracted,1650,13,23,15,611250,208240,-403010,6,9,1,14,0
+abo elhasn refaey,Maxillofacial Surgery,Resident,General,180,0,0,0,21600,0,-21600,0,0,0,0,0
+mohammed ali hassan,Maxillofacial Surgery,Consultant,Contracted,96,3,4,54,35520,354090,318570,51,3,1,8,45
+aya mohammed saady,ophthalmic surgery,Specialist,Contracted,175,0,0,0,29750,0,-29750,0,0,0,0,0
+ahmed ismaeil,ophthalmic surgery,Resident,General,672,0,0,0,80640,0,-80640,0,0,0,0,0
+ahmed abdel sattar,ophthalmic surgery,Specialist,General,1694,61,2117,163,245910,1209300,963390,162,1,0,7,156
+ahmed mahmoud atef,ophthalmic surgery,Resident,General,1684,0,0,0,202080,0,-202080,0,0,0,0,0
+ayman abdel absit,ophthalmic surgery,Specialist,General,1008,63,2150,0,143010,322500,179490,0,0,0,0,0
+israa talat,ophthalmic surgery,Resident,General,1684,0,0,0,202080,0,-202080,0,0,0,0,0
+ahmed metwally,ophthalmic surgery,Resident,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+hammad yosry,ophthalmic surgery,Resident,General,672,0,0,0,80640,0,-80640,0,0,0,0,0
+abdel hameid sayed,ophthalmic surgery,Resident,General,840,0,0,0,100800,0,-100800,0,0,0,0,0
+abdel salam mohsen,ophthalmic surgery,Consultant,Contracted,0,10,132,93,0,1025900,1025900,93,0,0,90,3
+fatima ibrahim,ophthalmic surgery,Specialist,General,1694,82,2410,0,245910,361500,115590,0,0,0,0,0
+fatima al zahraa,ophthalmic surgery,Specialist,General,343,41,1149,15,54950,443940,388990,15,0,3,1,11
+karam kleem,ophthalmic surgery,Consultant,Contracted,0,6,49,26,0,293350,293350,26,0,0,26,0
+mohammed atef,ophthalmic surgery,Resident,General,1684,97,3025,0,202080,453750,251670,0,0,0,0,0
+mahmoud hesham,ophthalmic surgery,Resident,General,1684,0,0,0,202080,0,-202080,0,0,0,0,0
+montaser raouf,ophthalmic surgery,Consultant,Contracted,1088,16,470,4,215180,94360,-120820,4,0,0,0,4
+maha zakaria,ophthalmic surgery,Resident,General,532,0,0,0,63840,0,-63840,0,0,0,0,0
+nadia khaleil,ophthalmic surgery,Specialist,General,1694,58,1600,191,245910,1127260,881350,190,1,0,3,188
+heba sayed hussein,ophthalmic surgery,Resident,General,1684,0,0,0,202080,0,-202080,0,0,0,0,0
+yaser al sayed,ophthalmic surgery,Resident,General,984,0,0,0,118080,0,-118080,0,0,0,0,0
+ahmed al nady,Orthopedic Surgery,Resident,Contracted,1380,0,0,0,182760,0,-182760,0,0,0,0,0
+ahmed hamdy ahmed,Orthopedic Surgery,Specialist,Contracted,444,8,297,7,75480,156200,80720,5,2,0,7,0
+ahmed ramadan ahmed,Orthopedic Surgery,Resident,Contracted,1998,0,0,0,263820,0,-263820,0,0,0,0,0
+ahmed abdelkader mostafa,Orthopedic Surgery,Specialist,Contracted,1884,51,2383,129,320280,2461830,2141550,82,47,7,106,16
+ahmed mohammed ahmed,Orthopedic Surgery,Resident,Contracted,1860,0,0,0,247320,0,-247320,0,0,0,0,0
+ayman mohammed sayed,Orthopedic Surgery,Resident,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+baher safy,Orthopedic Surgery,Specialist,Contracted,1362,16,586,36,231540,650550,419010,18,18,0,36,0
+badr hashim,Orthopedic Surgery,Resident,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+boktor khaleil,Orthopedic Surgery,Specialist,Contracted,234,2,73,3,39780,46540,6760,2,1,1,1,1
+bola adel,Orthopedic Surgery,Specialist,Contracted,1032,39,1349,47,175440,766760,591320,23,24,2,37,8
+gorge abdullah,Orthopedic Surgery,Specialist,General,287,36,1661,1,43050,265700,222650,0,1,0,1,0
+gorge adel,Orthopedic Surgery,Resident,Contracted,546,0,0,0,72420,0,-72420,0,0,0,0,0
+hassan ali mohammed,Orthopedic Surgery,Resident,Contracted,816,0,0,0,97920,0,-97920,0,0,0,0,0
+abdelrahman khdary,Orthopedic Surgery,Specialist,Contracted,1044,13,507,26,177480,456000,278520,14,12,0,25,1
+abdelrahman mahmoud hanafy,Orthopedic Surgery,Resident,Contracted,1374,0,0,1,183300,9970,-173330,0,1,0,1,0
+abdelrahman yosef khaleil,Orthopedic Surgery,Resident,Contracted,594,0,0,0,79020,0,-79020,0,0,0,0,0
+esam abdelahameid,Orthopedic Surgery,Specialist,General,1708,61,2105,31,256200,753470,497270,19,12,1,27,3
+emad hamdy,Ped Orthopedics,Consultant,Contracted,960,38,947,28,355680,525690,170010,26,2,1,26,1
+emad ramadan,Orthopedic Surgery,Specialist,Contracted,1626,23,862,16,276420,451160,174740,8,8,3,13,0
+fouad mahmoud fouad,Orthopedic Surgery,Resident,Contracted,1176,0,0,0,156240,0,-156240,0,0,0,0,0
+mohammed ahmed amin,Orthopedic Surgery,Resident,General,1682,0,0,0,201840,0,-201840,0,0,0,0,0
+mohammed ahmed afify,Orthopedic Surgery,Specialist,Contracted,792,10,301,15,134640,251390,116750,7,8,1,13,1
+mohammed al sayed anwar,Orthopedic Surgery,Specialist,Contracted,1572,6,287,87,267240,1119180,851940,69,18,2,59,26
+mohammed alhady,Orthopedic Surgery,Specialist,Contracted,1866,32,1108,75,317220,1459760,1142540,51,24,7,63,5
+mohammed bakr abo seda,Orthopedic Surgery,Specialist,Contracted,1266,17,546,41,215220,635480,420260,24,17,1,35,5
+mohammed samir,Orthopedic Surgery,Resident,Contracted,192,0,0,0,24960,0,-24960,0,0,0,0,0
+mohammed kamil mohamed,Orthopedic Surgery,Specialist,Contracted,318,3,29,1,54060,14320,-39740,1,0,0,1,0
+mohammedmostafa ali,Orthopedic Surgery,Resident,General,1725,0,0,0,207000,0,-207000,0,0,0,0,0
+mahmoud garmoun,Orthopedic Surgery,Resident,Contracted,2898,0,0,0,383220,0,-383220,0,0,0,0,0
+morkos hanna,Orthopedic Surgery,Consultant,Contracted,0,0,0,0,0,0,0,0,0,0,0,0
+mina gamil adly,Orthopedic Surgery,Resident,Contracted,0,0,0,1,0,9970,9970,0,1,0,1,0
+mina youssef azmy,Orthopedic Surgery,Resident,Contracted,966,0,0,0,127740,0,-127740,0,0,0,0,0
+hany masry,Orthopedic Surgery,Specialist,General,1680,38,1094,13,252000,303700,51700,13,0,0,8,5
+ahmed abdelfattah,Urology surgery,Specialist,Contracted,1860,31,837,76,316200,1683500,1367300,55,21,25,32,19
+gorge wahib,Urology surgery,Resident,Contracted,1600,0,0,1,193560,23480,-170080,1,0,0,1,0
+hosam sultan,Urology surgery,Resident,Contracted,1512,0,0,0,199320,0,-199320,0,0,0,0,0
+abdel hafiz hasan,Urology surgery,Specialist,Contracted,2119,89,2329,95,360230,1806120,1445890,88,7,8,58,29
+abdal rahman mobarak,Urology surgery,Specialist,Contracted,1866,39,1339,142,317220,2875060,2557840,119,23,37,74,31
+abdal rahman mahmoud,Urology surgery,Resident,Contracted,1644,23,638,87,270840,1754430,1483590,79,8,19,54,14
+omar al sagheir,Urology surgery,Consultant,Contracted,0,0,0,10,0,201090,201090,9,1,3,6,1
+mohammed al gelany,Urology surgery,Specialist,Contracted,1698,20,730,70,288660,1473730,1185070,62,8,17,43,10
+mohammed farman,Urology surgery,Resident,General,868,0,0,0,104160,0,-104160,0,0,0,0,0
+mohammed ali mohammed,Urology surgery,Resident,General,1686,0,0,0,202320,0,-202320,0,0,0,0,0
+mahmoud aboal hagag,Urology surgery,Resident,General,1684,0,0,0,202080,0,-202080,0,0,0,0,0
+ahmed mohamed abdal raheim,Gynecology Surgery,Resident,General,1701,0,0,0,204120,0,-204120,0,0,0,0,0
+ahmed kamil,Gynecology Surgery,Specialist,General,2100,56,998,168,352920,2032970,1680050,114,54,0,140,28
+abanoub andrawis,Gynecology Surgery,Specialist,General,657,15,73,7,93720,88630,-5090,3,4,0,6,1
+abamoub thrwat,Gynecology Surgery,Resident,General,1659,0,0,3,199080,29900,-169180,3,0,0,2,1
+osama ahmed attia,Gynecology Surgery,Resident,General,1701,0,0,0,204120,0,-204120,0,0,0,0,0
+gorge sabry,Gynecology Surgery,Resident,General,1843,0,0,0,221160,0,-221160,0,0,0,0,0
+hasan al nady,Gynecology Surgery,Specialist,General,1718,0,0,2,257700,21970,-235730,0,2,0,2,0
+remon emad,Gynecology Surgery,Resident,General,1706,0,0,1,204720,12700,-192020,1,0,0,1,0
+remon mubarak,Gynecology Surgery,Specialist,General,1688,27,261,59,253200,678990,425790,23,36,0,46,13
+kerlous shayieb,Gynecology Surgery,Specialist,General,1676,32,599,68,257880,867360,609480,38,30,0,59,9
+michael abdo mariem,Gynecology Surgery,Specialist,General,648,8,60,4,92370,35570,-56800,2,2,0,1,3
+mohammed mahmoud hussein,Gynecology Surgery,Resident,General,1292,0,0,0,166320,0,-166320,0,0,0,0,0
+nadi othman,Gynecology Surgery,Specialist,General,1356,55,346,25,200040,306280,106240,10,15,0,18,7
+hany vector wadee,Gynecology Surgery,Specialist,General,1671,26,268,109,250650,1261580,1010930,65,44,0,91,18
+montaser sharkawy,Orthopedic Surgery,Consultant,Contracted,0,0,0,272,0,4993930,4993930,136,136,35,231,6
+shreif al treigy,Orthopedic Surgery,Consultant,Contracted,0,0,0,90,0,2120090,2120090,79,11,44,45,1
+ahmed al attar,Orthopedic Surgery,Consultant,Contracted,0,0,0,245,0,5010750,5010750,167,78,89,151,5
+moahmmed mosa,Orthopedic Surgery,Consultant,Contracted,0,0,0,35,0,1028900,1028900,34,1,23,11,1
+karim bakr esawy,ophthalmic surgery,Consultant,Contracted,0,0,0,42,0,456310,456310,41,1,0,26,16
+tarek abdel azeim,Vascular Surgery,Consultant,Contracted,0,0,0,6,0,74470,74470,5,1,0,3,3
