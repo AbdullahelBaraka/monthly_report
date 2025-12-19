@@ -187,192 +187,189 @@ with st.sidebar:
         st.error("❌ CSV must contain 'department' column")
         st.stop()
     
-    with st.sidebar:
-        department = st.selectbox("🏥 Select Department", sorted(df["department"].dropna().unique()))
-        st.metric("Total Departments", len(df["department"].unique()))
-        st.metric("Total Staff", len(df))
+
     
-    dept_df = df[df["department"] == department].copy()
-    dept_df["Degree Group"] = dept_df["degree"].apply(classify_degree) if "degree" in dept_df.columns else "Other"
+dept_df = df[df["department"] == department].copy()
+dept_df["Degree Group"] = dept_df["degree"].apply(classify_degree) if "degree" in dept_df.columns else "Other"
+
+# Manpower Overview (Modified: 3 cards only)
+st.markdown('<div class="section-header">👥 Manpower Overview</div>', unsafe_allow_html=True)
+total_staff = len(dept_df)
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Staff", total_staff)
+
+if "Contract type" in dept_df.columns:
+    contract_counts = dept_df["Contract type"].value_counts()
+    cont_val = contract_counts.get("Contracted", 0)
+    cont_pct = (cont_val/total_staff*100) if total_staff else 0
+    col2.metric("Contracted", f"{cont_val} ({cont_pct:.1f}%)")
     
-    # Manpower Overview (Modified: 3 cards only)
-    st.markdown('<div class="section-header">👥 Manpower Overview</div>', unsafe_allow_html=True)
-    total_staff = len(dept_df)
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Staff", total_staff)
-    
-    if "Contract type" in dept_df.columns:
-        contract_counts = dept_df["Contract type"].value_counts()
-        cont_val = contract_counts.get("Contracted", 0)
-        cont_pct = (cont_val/total_staff*100) if total_staff else 0
-        col2.metric("Contracted", f"{cont_val} ({cont_pct:.1f}%)")
+    gen_val = contract_counts.get("General", 0)
+    gen_pct = (gen_val/total_staff*100) if total_staff else 0
+    col3.metric("General", f"{gen_val} ({gen_pct:.1f}%)")
+else:
+    col2.metric("Contracted", "N/A")
+    col3.metric("General", "N/A")
+
+# Staff Breakdown (Modified: 3 cards per degree)
+st.markdown('<div class="section-header">📋 Staff Breakdown by Degree</div>', unsafe_allow_html=True)
+detailed_tables = {}
+
+for degree in ["Consultant", "Specialist", "Resident"]:
+    deg_df = dept_df[dept_df["Degree Group"] == degree]
+    if not deg_df.empty:
+        total_deg = len(deg_df)
+        st.markdown(f"#### 👨‍⚕️ {degree}s")
         
-        gen_val = contract_counts.get("General", 0)
-        gen_pct = (gen_val/total_staff*100) if total_staff else 0
-        col3.metric("General", f"{gen_val} ({gen_pct:.1f}%)")
-    else:
-        col2.metric("Contracted", "N/A")
-        col3.metric("General", "N/A")
-    
-    # Staff Breakdown (Modified: 3 cards per degree)
-    st.markdown('<div class="section-header">📋 Staff Breakdown by Degree</div>', unsafe_allow_html=True)
-    detailed_tables = {}
-    
-    for degree in ["Consultant", "Specialist", "Resident"]:
-        deg_df = dept_df[dept_df["Degree Group"] == degree]
-        if not deg_df.empty:
-            total_deg = len(deg_df)
-            st.markdown(f"#### 👨‍⚕️ {degree}s")
-            
-            # 3 Cards per Degree
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Total", total_deg)
-            
-            if "Contract type" in deg_df.columns:
-                contracted = (deg_df["Contract type"] == "Contracted").sum()
-                general = (deg_df["Contract type"] == "General").sum()
-                c2.metric("Contracted", contracted)
-                c3.metric("General", general)
-                table_df = deg_df[["staff name", "Contract type"]].copy()
-                table_df.columns = ["Staff Name", "Contract Type"]
-            else:
-                c2.metric("Contracted", "N/A")
-                c3.metric("General", "N/A")
-                table_df = deg_df[["staff name"]].copy()
-                table_df.columns = ["Staff Name"]
-            
-            st.dataframe(table_df, use_container_width=True, hide_index=True)
-            detailed_tables[degree] = table_df
-            st.markdown("---")
-    
-    # Performance Metrics
-    st.markdown('<div class="section-header">📊 Performance Metrics</div>', unsafe_allow_html=True)
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Hours", f"{safe_sum(dept_df, 'total hours'):,.0f}")
-    col2.metric("Opened Clinics", f"{safe_sum(dept_df, 'opened clinic'):,.0f}")
-    col3.metric("Total Visits", f"{safe_sum(dept_df, 'Total visits'):,.0f}")
-    col4.metric("Total Operations", f"{safe_sum(dept_df, 'Operation total number'):,.0f}")
-    
-    # Operations Overview
-    st.markdown('<div class="section-header">🛠️ Operations Overview</div>', unsafe_allow_html=True)
-    elective = safe_sum(dept_df, "opr_elective")
-    emergency = safe_sum(dept_df, "opr_emergency")
-    high = safe_sum(dept_df, "opr_high")
-    moderate = safe_sum(dept_df, "opr_moderate")
-    low = safe_sum(dept_df, "opr_low")
-    
-    # Blue Palette for Charts
-    blue_colors_source = ['#1e3a8a', '#60a5fa'] # Dark Blue, Light Blue
-    blue_colors_value = ['#172554', '#2563eb', '#93c5fd'] # Darkest, Mid, Lightest
-
-    col1, col2 = st.columns(2)
-    with col1:
-        fig = go.Figure(data=[go.Pie(labels=['Elective', 'Emergency'], values=[elective, emergency], hole=0.4, marker_colors=blue_colors_source)])
-        fig.update_layout(title="Operation Source", height=350)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        fig = go.Figure(data=[go.Pie(labels=['High', 'Moderate', 'Low'], values=[high, moderate, low], hole=0.4, marker_colors=blue_colors_value)])
-        fig.update_layout(title="Operation Value", height=350)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Financial Performance
-    st.markdown('<div class="section-header">💰 Financial Performance</div>', unsafe_allow_html=True)
-    total_salary = safe_sum(dept_df, "total slary")
-    total_income = safe_sum(dept_df, "total income")
-    total_net = safe_sum(dept_df, "Net")
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Salary", f"${total_salary:,.0f}")
-    col2.metric("Total Income", f"${total_income:,.0f}")
-    col3.metric("Net Income", f"${total_net:,.0f} ({(total_net/total_income*100 if total_income else 0):.1f}%)")
-    
-    # Staff Analytics
-    st.markdown('<div class="section-header">👤 Staff Performance Analytics</div>', unsafe_allow_html=True)
-    
-    degree_order = ["Consultant", "Specialist", "Resident", "Other"]
-    dept_df["Degree Group"] = pd.Categorical(dept_df["Degree Group"], categories=degree_order, ordered=True)
-    staff_sorted_df = dept_df.sort_values(by="Degree Group")
-    
-    # Blue color scale for bars
-    blue_scale_map = {"Consultant": "#1e3a8a", "Specialist": "#3b82f6", "Resident": "#93c5fd", "Other": "#e0f2fe"}
-
-    # Dynamic Height Calculation (25px per staff member + buffer) to show ALL staff
-    dynamic_height = max(400, 200 + (len(staff_sorted_df) * 25))
-
-    tab1, tab2, tab3 = st.tabs(["🏥 Clinics", "⚕️ Operations", "💵 Financial"])
-    
-    with tab1:
-        fig = px.bar(staff_sorted_df.sort_values("opened clinic", ascending=True), 
-                     y="staff name", x="opened clinic", 
-                     color="Degree Group", title="Clinics by Staff (All)", orientation='h',
-                     color_discrete_map=blue_scale_map)
-        fig.update_layout(height=dynamic_height)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with tab2:
-        fig = px.bar(staff_sorted_df.sort_values("Operation total number", ascending=True), 
-                     y="staff name", x="Operation total number", 
-                     color="Degree Group", title="Operations by Staff (All)", orientation='h',
-                     color_discrete_map=blue_scale_map)
-        fig.update_layout(height=dynamic_height)
-        st.plotly_chart(fig, use_container_width=True)
+        # 3 Cards per Degree
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total", total_deg)
         
-        col1, col2 = st.columns(2)
-        with col1:
-            fig = px.bar(x=["Elective", "Emergency"], y=[elective, emergency], title="Operations by Type", 
-                         color=["Elective", "Emergency"], color_discrete_map={"Elective": "#1e3a8a", "Emergency": "#60a5fa"})
-            st.plotly_chart(fig, use_container_width=True)
-        with col2:
-            fig = px.bar(x=["High", "Moderate", "Low"], y=[high, moderate, low], title="Operations by Value",
-                         color=["High", "Moderate", "Low"], color_discrete_map={"High": "#172554", "Moderate": "#2563eb", "Low": "#93c5fd"})
-            st.plotly_chart(fig, use_container_width=True)
-    
-    with tab3:
-        fig = px.bar(staff_sorted_df.sort_values("Net", ascending=True), 
-                     y="staff name", x="Net",
-                     color="Degree Group", title="Net Income by Staff (All)", orientation='h',
-                     color_discrete_map=blue_scale_map)
-        fig.update_layout(height=dynamic_height)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Data Tables
-    st.markdown('<div class="section-header">📋 Detailed Tables</div>', unsafe_allow_html=True)
-    
-    perf_table = staff_sorted_df[["staff name", "degree", "total hours", "opened clinic", "Total visits", "Operation total number"]].copy()
-    perf_table.columns = ["Staff Name", "Degree", "Total Hours", "Opened Clinics", "Total Visits", "Total Operations"]
-    perf_table["Avg. Clinics"] = (perf_table["Opened Clinics"] / 10).round(2)
-    perf_table["Avg. Operations"] = (perf_table["Total Operations"] / 10).round(2)
-    
-    st.markdown("### Overall Performance")
-    st.dataframe(perf_table, use_container_width=True, hide_index=True)
-    
-    op_source_table = staff_sorted_df[["staff name", "degree", "opr_elective", "opr_emergency", "Operation total number"]].copy()
-    op_source_table.columns = ["Staff Name", "Degree", "Elective", "Emergency", "Total Operations"]
-    
-    op_value_table = staff_sorted_df[["staff name", "degree", "opr_high", "opr_moderate", "opr_low", "Operation total number"]].copy()
-    op_value_table.columns = ["Staff Name", "Degree", "High", "Moderate", "Low", "Total Operations"]
+        if "Contract type" in deg_df.columns:
+            contracted = (deg_df["Contract type"] == "Contracted").sum()
+            general = (deg_df["Contract type"] == "General").sum()
+            c2.metric("Contracted", contracted)
+            c3.metric("General", general)
+            table_df = deg_df[["staff name", "Contract type"]].copy()
+            table_df.columns = ["Staff Name", "Contract Type"]
+        else:
+            c2.metric("Contracted", "N/A")
+            c3.metric("General", "N/A")
+            table_df = deg_df[["staff name"]].copy()
+            table_df.columns = ["Staff Name"]
+        
+        st.dataframe(table_df, use_container_width=True, hide_index=True)
+        detailed_tables[degree] = table_df
+        st.markdown("---")
+
+# Performance Metrics
+st.markdown('<div class="section-header">📊 Performance Metrics</div>', unsafe_allow_html=True)
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Total Hours", f"{safe_sum(dept_df, 'total hours'):,.0f}")
+col2.metric("Opened Clinics", f"{safe_sum(dept_df, 'opened clinic'):,.0f}")
+col3.metric("Total Visits", f"{safe_sum(dept_df, 'Total visits'):,.0f}")
+col4.metric("Total Operations", f"{safe_sum(dept_df, 'Operation total number'):,.0f}")
+
+# Operations Overview
+st.markdown('<div class="section-header">🛠️ Operations Overview</div>', unsafe_allow_html=True)
+elective = safe_sum(dept_df, "opr_elective")
+emergency = safe_sum(dept_df, "opr_emergency")
+high = safe_sum(dept_df, "opr_high")
+moderate = safe_sum(dept_df, "opr_moderate")
+low = safe_sum(dept_df, "opr_low")
+
+# Blue Palette for Charts
+blue_colors_source = ['#1e3a8a', '#60a5fa'] # Dark Blue, Light Blue
+blue_colors_value = ['#172554', '#2563eb', '#93c5fd'] # Darkest, Mid, Lightest
+
+col1, col2 = st.columns(2)
+with col1:
+    fig = go.Figure(data=[go.Pie(labels=['Elective', 'Emergency'], values=[elective, emergency], hole=0.4, marker_colors=blue_colors_source)])
+    fig.update_layout(title="Operation Source", height=350)
+    st.plotly_chart(fig, use_container_width=True)
+
+with col2:
+    fig = go.Figure(data=[go.Pie(labels=['High', 'Moderate', 'Low'], values=[high, moderate, low], hole=0.4, marker_colors=blue_colors_value)])
+    fig.update_layout(title="Operation Value", height=350)
+    st.plotly_chart(fig, use_container_width=True)
+
+# Financial Performance
+st.markdown('<div class="section-header">💰 Financial Performance</div>', unsafe_allow_html=True)
+total_salary = safe_sum(dept_df, "total slary")
+total_income = safe_sum(dept_df, "total income")
+total_net = safe_sum(dept_df, "Net")
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Salary", f"${total_salary:,.0f}")
+col2.metric("Total Income", f"${total_income:,.0f}")
+col3.metric("Net Income", f"${total_net:,.0f} ({(total_net/total_income*100 if total_income else 0):.1f}%)")
+
+# Staff Analytics
+st.markdown('<div class="section-header">👤 Staff Performance Analytics</div>', unsafe_allow_html=True)
+
+degree_order = ["Consultant", "Specialist", "Resident", "Other"]
+dept_df["Degree Group"] = pd.Categorical(dept_df["Degree Group"], categories=degree_order, ordered=True)
+staff_sorted_df = dept_df.sort_values(by="Degree Group")
+
+# Blue color scale for bars
+blue_scale_map = {"Consultant": "#1e3a8a", "Specialist": "#3b82f6", "Resident": "#93c5fd", "Other": "#e0f2fe"}
+
+# Dynamic Height Calculation (25px per staff member + buffer) to show ALL staff
+dynamic_height = max(400, 200 + (len(staff_sorted_df) * 25))
+
+tab1, tab2, tab3 = st.tabs(["🏥 Clinics", "⚕️ Operations", "💵 Financial"])
+
+with tab1:
+    fig = px.bar(staff_sorted_df.sort_values("opened clinic", ascending=True), 
+                 y="staff name", x="opened clinic", 
+                 color="Degree Group", title="Clinics by Staff (All)", orientation='h',
+                 color_discrete_map=blue_scale_map)
+    fig.update_layout(height=dynamic_height)
+    st.plotly_chart(fig, use_container_width=True)
+
+with tab2:
+    fig = px.bar(staff_sorted_df.sort_values("Operation total number", ascending=True), 
+                 y="staff name", x="Operation total number", 
+                 color="Degree Group", title="Operations by Staff (All)", orientation='h',
+                 color_discrete_map=blue_scale_map)
+    fig.update_layout(height=dynamic_height)
+    st.plotly_chart(fig, use_container_width=True)
     
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("### Operation Source")
-        st.dataframe(op_source_table, use_container_width=True, hide_index=True)
+        fig = px.bar(x=["Elective", "Emergency"], y=[elective, emergency], title="Operations by Type", 
+                     color=["Elective", "Emergency"], color_discrete_map={"Elective": "#1e3a8a", "Emergency": "#60a5fa"})
+        st.plotly_chart(fig, use_container_width=True)
     with col2:
-        st.markdown("### Operation Value")
-        st.dataframe(op_value_table, use_container_width=True, hide_index=True)
-    
-    fin_table = staff_sorted_df[["staff name", "degree", "total slary", "total income", "Net"]].copy()
-    fin_table.columns = ["Staff Name", "Degree", "Total Salary", "Total Income", "Net Income"]
-    
-    st.markdown("### Financial Performance")
-    st.dataframe(fin_table, use_container_width=True, hide_index=True)
-    
-    # PDF Generation
-    if st.button("📄 Generate PDF Report"):
-        try:
-            pdf_buffer = generate_pdf(dept_df, department, detailed_tables, perf_table, op_source_table, op_value_table, fin_table)
-            st.download_button("📥 Download PDF", data=pdf_buffer, file_name=f"{department}_report.pdf", mime="application/pdf")
-        except Exception as e:
-            st.error(f"PDF generation failed: {e}")
+        fig = px.bar(x=["High", "Moderate", "Low"], y=[high, moderate, low], title="Operations by Value",
+                     color=["High", "Moderate", "Low"], color_discrete_map={"High": "#172554", "Moderate": "#2563eb", "Low": "#93c5fd"})
+        st.plotly_chart(fig, use_container_width=True)
+
+with tab3:
+    fig = px.bar(staff_sorted_df.sort_values("Net", ascending=True), 
+                 y="staff name", x="Net",
+                 color="Degree Group", title="Net Income by Staff (All)", orientation='h',
+                 color_discrete_map=blue_scale_map)
+    fig.update_layout(height=dynamic_height)
+    st.plotly_chart(fig, use_container_width=True)
+
+# Data Tables
+st.markdown('<div class="section-header">📋 Detailed Tables</div>', unsafe_allow_html=True)
+
+perf_table = staff_sorted_df[["staff name", "degree", "total hours", "opened clinic", "Total visits", "Operation total number"]].copy()
+perf_table.columns = ["Staff Name", "Degree", "Total Hours", "Opened Clinics", "Total Visits", "Total Operations"]
+perf_table["Avg. Clinics"] = (perf_table["Opened Clinics"] / 10).round(2)
+perf_table["Avg. Operations"] = (perf_table["Total Operations"] / 10).round(2)
+
+st.markdown("### Overall Performance")
+st.dataframe(perf_table, use_container_width=True, hide_index=True)
+
+op_source_table = staff_sorted_df[["staff name", "degree", "opr_elective", "opr_emergency", "Operation total number"]].copy()
+op_source_table.columns = ["Staff Name", "Degree", "Elective", "Emergency", "Total Operations"]
+
+op_value_table = staff_sorted_df[["staff name", "degree", "opr_high", "opr_moderate", "opr_low", "Operation total number"]].copy()
+op_value_table.columns = ["Staff Name", "Degree", "High", "Moderate", "Low", "Total Operations"]
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("### Operation Source")
+    st.dataframe(op_source_table, use_container_width=True, hide_index=True)
+with col2:
+    st.markdown("### Operation Value")
+    st.dataframe(op_value_table, use_container_width=True, hide_index=True)
+
+fin_table = staff_sorted_df[["staff name", "degree", "total slary", "total income", "Net"]].copy()
+fin_table.columns = ["Staff Name", "Degree", "Total Salary", "Total Income", "Net Income"]
+
+st.markdown("### Financial Performance")
+st.dataframe(fin_table, use_container_width=True, hide_index=True)
+
+# PDF Generation
+if st.button("📄 Generate PDF Report"):
+    try:
+        pdf_buffer = generate_pdf(dept_df, department, detailed_tables, perf_table, op_source_table, op_value_table, fin_table)
+        st.download_button("📥 Download PDF", data=pdf_buffer, file_name=f"{department}_report.pdf", mime="application/pdf")
+    except Exception as e:
+        st.error(f"PDF generation failed: {e}")
 
 
